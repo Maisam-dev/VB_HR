@@ -9,10 +9,13 @@ Public Class Oracdb
 
     '  End Sub
 
-
+    '
+    '
+    '
     Public Function insertArtikelIn(table As Hashtable) As Boolean
+        Dim ret As Boolean = False
         If table.Count < 1 Then
-            Return False
+            Return ret
         End If
         Dim query As String = " insert all "
         Dim values As String = Nothing
@@ -42,7 +45,8 @@ Public Class Oracdb
                       table(row)("AVISOPFLICHT") & "','" &
                       table(row)("CHARGENPFLICHT") & "','" &
                       table(row)("HOCHREGALFAEHIG") & "','" &
-                      table(row)("LAGEROPTION") & "'" &
+                      table(row)("LAGEROPTION") & "','" &
+                      table(row)("ABCKLASSE") & "'" &
                       ")"
             End If
 
@@ -69,7 +73,8 @@ Public Class Oracdb
                                      AVISOPFLICHT,
                                      CHARGENPFLICHT,
                                      HOCHREGALFAEHIG,
-                                     lageroption
+                                     lageroption,
+                                     ABCKLASSE
                                      )"
             End If
 
@@ -88,17 +93,22 @@ Public Class Oracdb
             cmd.ExecuteNonQuery()
             Trans.Commit()
             conn.Close()
+            ret = True
         Catch ex As Exception
             Trans.Rollback()
             conn.Close()
-            ' MsgBox(ex.Message)
-            Console.WriteLine(ex.Message)
-            Return False
+            pt.put("Oracdb", "insertArtikelIn", query, ex.Message, Form1.loopCounter)
+            ret = False
         End Try
-        Return True
+        Return ret
+
     End Function
 
-
+    '
+    '
+    '
+    '
+    '
     Public Function getTable(query As String) As Hashtable
 
         Dim cmd As New OracleCommand
@@ -126,10 +136,9 @@ Public Class Oracdb
                     conn.Close()
                 End If
             Catch ex As Exception
-                'MsgBox(ex.Message)
-                Console.WriteLine(ex.Message)
                 conn.Close()
                 ret = Nothing
+                pt.put("Oracdb", "getTable", query, ex.Message, Form1.loopCounter)
             Finally
                 conn.Close()
             End Try
@@ -138,12 +147,17 @@ Public Class Oracdb
         Return ret
 
     End Function
+    '
+    '
+    '
+    '
+    '
+    Public Function updateTable(TableName As String, spalteStatus As String, wert As Integer, values As String) As Boolean
 
-    Public Function updateTable(TableName As String, spalteStatus As String, wert As Integer, values As String, Optional cu_Time As Boolean = False) As Boolean ' todo update  set updated spalte = sysdate
+        Dim Sql = "update " & TableName & " set " & spalteStatus & " = " & wert & " where MESSAGEID in " & values
+        Dim cmd As New OracleCommand(Sql, conn)
 
-        Dim cmd As New OracleCommand("update " & TableName & " set " & spalteStatus & " = " & wert & " where MESSAGEID in (" & values & ")", conn)
-
-        If Not String.IsNullOrEmpty(values) Then
+        If Not String.IsNullOrEmpty(values) And Not values.Equals("()") Then
             Try
                 cmd.CommandType = CommandType.Text
                 conn.Open()
@@ -153,6 +167,7 @@ Public Class Oracdb
                 Console.Beep()
                 Console.WriteLine(ex.Message)
                 conn.Close()
+                pt.put("Oracdb", "updateTable", Sql, ex.Message, Form1.loopCounter)
                 Return False
             End Try
             Return True
@@ -161,38 +176,63 @@ Public Class Oracdb
     End Function
 
 
-    Public Function getOrderIdUndMessegId(Table As Hashtable) As Hashtable
+    'Public Function getOrderIdUndMessegId(Table As Hashtable) As Hashtable
 
-        Dim MESSAGEIDFehle As String = " "
-        Dim ORDERIDFehle As String = " "
-        Dim MESSAGEIDOhneFehle As String = " "
-        Dim ORDERIDOhneFehle As String = " "
+    '    Dim MESSAGEIDFehle As String = " "
+    '    Dim ORDERIDFehle As String = " "
+    '    Dim MESSAGEIDOhneFehle As String = " "
+    '    Dim ORDERIDOhneFehle As String = " "
+    '    Dim OrMESSAGEIDFehle As String = " "
+    '    Dim OrMESSAGEIDOhneFehle As String = " "
+    '    Dim ErrCounter As Integer = 0
+    '    Dim CorCounter As Integer = 0
+    '    Dim messegIDTable As New Hashtable()
 
-        Dim messegIDTable As New Hashtable()
+    '    If Not IsNothing(Table) Then
+    '        For row As Integer = 0 To Table.Count - 1
+    '            If Not String.IsNullOrEmpty(Table(row)("ERRORID").ToString) Then ' containskex("key")
+    '                ErrCounter += 1
+    '                ORDERIDFehle += Table(row)("ORDERID") & ","
 
-        If Not IsNothing(Table) Then
-            For row As Integer = 0 To Table.Count - 1
-                If Not String.IsNullOrEmpty(Table(row)("ERRORID").ToString) Then
-                    MESSAGEIDFehle += Table(row)("MESSAGEID") & ","
-                    ORDERIDFehle += Table(row)("ORDERID") & ","
-                Else
-                    MESSAGEIDOhneFehle += Table(row)("MESSAGEID") & ","
-                    ORDERIDOhneFehle += Table(row)("ORDERID") & ","
-                End If
-            Next
+    '                If ErrCounter < 1000 Then
+    '                    MESSAGEIDFehle += Table(row)("MESSAGEID") & ","
+    '                Else
+    '                    OrMESSAGEIDFehle += Table(row)("MESSAGEID") & ","
+    '                End If
 
-            messegIDTable.Add("MESSAGEIDFehle", MESSAGEIDFehle.Substring(0, MESSAGEIDFehle.Length - 1))
-            messegIDTable.Add("ORDERIDFehle", ORDERIDFehle.Substring(0, ORDERIDFehle.Length - 1))
-            messegIDTable.Add("MESSAGEIDOhneFehle", MESSAGEIDOhneFehle.Substring(0, MESSAGEIDOhneFehle.Length - 1))
-            messegIDTable.Add("ORDERIDOhneFehle", ORDERIDOhneFehle.Substring(0, ORDERIDOhneFehle.Length - 1))
-            Return messegIDTable
-        End If
+    '            Else
+    '                CorCounter += 1
+    '                ORDERIDOhneFehle += Table(row)("ORDERID") & ","
 
-    End Function
+    '                If CorCounter < 1000 Then
+    '                    MESSAGEIDOhneFehle += Table(row)("MESSAGEID") & ","
+    '                Else
+    '                    OrMESSAGEIDOhneFehle += Table(row)("MESSAGEID") & ","
+    '                End If
 
+    '            End If
+    '        Next
+
+    '        messegIDTable.Add("MESSAGEIDFehle", MESSAGEIDFehle.Substring(0, MESSAGEIDFehle.Length - 1))
+    '        messegIDTable.Add("ORDERIDFehle", ORDERIDFehle.Substring(0, ORDERIDFehle.Length - 1))
+    '        messegIDTable.Add("MESSAGEIDOhneFehle", MESSAGEIDOhneFehle.Substring(0, MESSAGEIDOhneFehle.Length - 1))
+    '        messegIDTable.Add("ORDERIDOhneFehle", ORDERIDOhneFehle.Substring(0, ORDERIDOhneFehle.Length - 1))
+    '        messegIDTable.Add("OrMESSAGEIDFehle", OrMESSAGEIDFehle.Substring(0, OrMESSAGEIDFehle.Length - 1))
+    '        messegIDTable.Add("OrMESSAGEIDOhneFehle", OrMESSAGEIDOhneFehle.Substring(0, OrMESSAGEIDOhneFehle.Length - 1))
+    '        Return messegIDTable
+    '    End If
+
+    'End Function
+
+
+    '
+    '
+    '
+    '
+    '
     Public Function insertInTable(fromTable As Hashtable, ToTable As String, Optional cu_Time As Boolean = False) As Boolean
 
-        If IsNothing(fromTable) Then
+        If IsNothing(fromTable) Or fromTable.Count < 1 Then
             Return False
         End If
         Dim Trans As OracleTransaction = Nothing
@@ -239,11 +279,113 @@ Public Class Oracdb
             ' MsgBox(ex.Message)
             Console.WriteLine(ex.Message)
             ret = False
+            pt.put("Oracdb", "insertInTable", sql, ex.Message, Form1.loopCounter)
         Finally
             conn.Close()
         End Try
         Return ret
 
+    End Function
+
+
+
+    '
+    '
+    '
+    '
+    Public Function getMsgIdAndOrderId(table As Hashtable) As Hashtable
+
+        Dim Linst As New Hashtable()
+        Dim MESSAGEIDFehle As String = ""
+        Dim ORDERIDFehle As String = ""
+        Dim ORDERID As String = ""
+        Dim MESSAGEID As String = ""
+        Dim start As Integer = 0
+        Dim end_ As Integer = 999
+        Dim round As Integer = 0
+        Dim orValcounter As Integer = 0
+
+
+        If Not IsNothing(table) And Not table.Count < 1 Then
+
+            MESSAGEIDFehle = "( "
+            ORDERIDFehle = "( "
+            ORDERID = "( "
+            MESSAGEID = "( "
+            round = Math.Round((table.Count / 1000) + 0.5)
+            orValcounter = round
+
+            For R As Integer = 1 To round
+                orValcounter -= 1
+                If orValcounter = 0 Then
+                    end_ = table.Count - 1
+                End If
+
+                For row As Integer = start To end_
+
+                    If table(row).ContainsKey("ERRORID") Then
+
+                        If Not String.IsNullOrEmpty(table(row)("ERRORID").ToString) Then
+                            MESSAGEIDFehle += table(row)("MESSAGEID") & ","
+                            ORDERIDFehle += table(row)("ORDERID") & ","
+                        Else
+                            MESSAGEID += table(row)("MESSAGEID") & ","
+                            ORDERID += table(row)("ORDERID") & ","
+                        End If
+
+                    Else
+                        MESSAGEID += table(row)("MESSAGEID") & ","
+                        ORDERID += table(row)("ORDERID") & ","
+                    End If
+                Next
+
+                MESSAGEIDFehle = closeVal(MESSAGEIDFehle)
+                MESSAGEID = closeVal(MESSAGEID)
+                ORDERIDFehle = closeVal(ORDERIDFehle)
+                ORDERID = closeVal(ORDERID)
+
+                If orValcounter > 0 Then
+                    start += 1001
+                    end_ += 1001
+                    MESSAGEIDFehle += get_ORVal(MESSAGEIDFehle)
+                    MESSAGEID += get_ORVal(MESSAGEID)
+                    ORDERIDFehle += get_ORVal(ORDERIDFehle)
+                    ORDERID += get_ORVal(ORDERID)
+                End If
+            Next
+        End If
+
+        Linst.Add("MESSAGEIDFehle", MESSAGEIDFehle)
+        Linst.Add("ORDERIDFehle", ORDERIDFehle)
+        Linst.Add("MESSAGEID", MESSAGEID)
+        Linst.Add("ORDERID", ORDERID)
+        Return Linst
+
+    End Function
+
+    '
+    '
+    '
+    Public Function get_ORVal(Str As String) As String
+        Dim ret As String = ""
+        If Str.Equals("()") Then
+            ret = "( "
+        Else
+            ret = " or MESSAGEID in ( "
+        End If
+        Return ret
+    End Function
+
+
+    '
+    '
+    '
+    Public Function closeVal(str As String) As String
+        Dim ret As String = ""
+        If Not String.IsNullOrEmpty(str) Then
+            ret = str.Substring(0, str.Length - 1) & ")"
+        End If
+        Return ret
     End Function
 
 

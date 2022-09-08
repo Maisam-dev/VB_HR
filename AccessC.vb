@@ -2,7 +2,7 @@
 Public Class AccessC
 
     Private query As String = Nothing
-    Private Acsdb As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=\\10.41.1.40\lagerverwaltung\VogHrl.accdb") 'TODO 
+    Protected Shared Acsdb As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=\\10.41.1.42\lagerverwaltung\VogHrl.accdb") 'TODO 
 
 
 
@@ -10,8 +10,10 @@ Public Class AccessC
     '    query = sql
     'End Sub
 
-
-
+    '
+    '
+    '
+    '
     Public Function gettable(query As String) As Hashtable
         Dim ret = Nothing
         Dim ht As New Hashtable()
@@ -41,20 +43,25 @@ Public Class AccessC
                 Console.WriteLine(ex.Message)
                 Acsdb.Close()
                 ret = Nothing
+                pt.put("AccessC", "gettable", query, ex.Message, Form1.loopCounter)
             End Try
         End If
         Return ret
 
     End Function
-
+    '
+    '
+    '
+    '
 
     Public Function updateTable(table As String, statusSpalte As String, status As Integer, whereSpalte As String, values As String) As Boolean
-
+        Dim query As String = ""
         Dim ret = False
-        If Not String.IsNullOrWhiteSpace(values) Then
+        If Not String.IsNullOrWhiteSpace(values) And Not values.Equals("()") Then
+
             Try
                 Acsdb.Open()
-                Dim query As String = "update " & table & " set " & statusSpalte & " = " & status & " where " & whereSpalte & " in (" & values & ") and " & statusSpalte & " <> 12 " ' TODO
+                query = "update " & table & " set " & statusSpalte & " = " & status & " where " & whereSpalte & " in " & values.Replace("MESSAGEID", whereSpalte) & " and " & statusSpalte & " <> 12 " ' TODO
                 Dim Commd As New OleDbCommand(query, Acsdb)
                 Commd.ExecuteNonQuery()
                 ret = True
@@ -64,6 +71,7 @@ Public Class AccessC
                 Console.WriteLine(ex.Message)
                 Acsdb.Close()
                 ret = False
+                pt.put("AccessC", "updateTable", query, ex.Message, Form1.loopCounter)
             Finally
                 Acsdb.Close()
             End Try
@@ -72,17 +80,23 @@ Public Class AccessC
 
     End Function
 
+    '
+    '
+    '
     Public Function getIdlistFromTable(Table As Hashtable, IsSpalte As String) As String
         Dim IdList As String = " "
-
+        If IsNothing(Table) Then
+            Return IdList
+        End If
         If Table.Count > 0 Then
+            IdList = "("
             For row As Integer = 0 To Table.Count - 1
                 IdList += Table(row)(IsSpalte) & ","
             Next
-            IdList = IdList.Substring(0, IdList.Length - 1)
+            IdList = IdList.Substring(0, IdList.Length - 1) & ")"
         End If
-
         Return IdList
+
     End Function
 
     'Public Function insertInTable(fromTable As Hashtable, ToTable As String) As Boolean 'todo
@@ -134,7 +148,15 @@ Public Class AccessC
 
     'End Function
 
+    '
+    '
+    '
+    '
 
+    '
+    '
+    '
+    '
 
     Public Function insertInTable(fromTable As Hashtable, ToTable As String) As Boolean
 
@@ -183,6 +205,7 @@ Public Class AccessC
             'MsgBox(ex.Message)
             Console.WriteLine(ex.Message)
             ret = False
+            pt.put("AccessC", "insertInTable", "ToTable " & ToTable, ex.Message, Form1.loopCounter)
         Finally
             Acsdb.Close()
         End Try

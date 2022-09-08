@@ -86,4 +86,31 @@ SELECT
 FROM AvisoAnWamas
  WHERE AVStatus = 0
 "
+
+
+    Public Shared selectEINLAGERUNGSMELDUNG As String = "
+select 
+         MESSAGEID,
+        TELEGRAMTYPE,
+        ARTBEZ,
+        ARTIKELNR,
+        BIB,
+        CHARGE,
+        COLLIANZAHL,
+        CROSSDOCKING,
+        DISNR,
+        EAN,
+        HALTBAR,
+        HOEHENKLASSE,
+        KUNDENREFERENZ,
+        KUNDENREFERENZ2,
+        KUNDENREFERENZDATUM,
+        LOKATION,
+        MANDANTENGLN,
+        PALLETID,
+        PRODUKTIONSDATUM,
+        SDGNR
+from EINLAGERUNGSMELDUNG 
+ WHERE TELEGRAMSTATE = 0
+"
 End Class

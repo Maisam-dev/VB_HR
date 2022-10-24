@@ -63,7 +63,7 @@ SELECT
         ERRORTEXT ,
         ORDERID ,
         PALLETID,
-        PRODUKTIONSDATUM 
+        PRODUKTIONSDATUM
         FROM MOVEMENTORDEROUT
  WHERE TELEGRAMSTATE = 0
 "
@@ -84,7 +84,7 @@ SELECT
         [SDGNR], 
         [ZIEL]
 FROM AvisoAnWamas
- WHERE AVStatus = 0
+ WHERE TELEGRAMSTATE = 0
 "
 
 
@@ -109,7 +109,8 @@ select
         MANDANTENGLN,
         PALLETID,
         PRODUKTIONSDATUM,
-        SDGNR
+        SDGNR,
+        CREATED 
 from EINLAGERUNGSMELDUNG 
  WHERE TELEGRAMSTATE = 0
 "

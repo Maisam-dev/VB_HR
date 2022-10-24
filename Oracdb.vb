@@ -29,6 +29,7 @@ Public Class Oracdb
                       table(row)("BIB") & "','" &
                       table(row)("ARTIKELID") & "','" &
                       table(row)("TELEGRAMTYPE") & "','" &
+                      table(row)("ABCKLASSE") & "','" &
                       "0'," &
                       "sysdate," &
                       "sysdate)"
@@ -56,6 +57,7 @@ Public Class Oracdb
                                      BIB,
                                      ARTIKELID,
                                      TELEGRAMTYPE,
+                                     ABCKLASSE,
                                      TELEGRAMSTATE,
                                      CREATED,
                                      UPDATED)"
@@ -156,23 +158,22 @@ Public Class Oracdb
 
         Dim Sql = "update " & TableName & " set " & spalteStatus & " = " & wert & " where MESSAGEID in " & values
         Dim cmd As New OracleCommand(Sql, conn)
-
+        Dim ret As Boolean = False
         If Not String.IsNullOrEmpty(values) And Not values.Equals("()") Then
             Try
                 cmd.CommandType = CommandType.Text
                 conn.Open()
                 cmd.ExecuteNonQuery()
                 conn.Close()
+                ret = True
             Catch ex As Exception
                 Console.Beep()
                 Console.WriteLine(ex.Message)
                 conn.Close()
                 pt.put("Oracdb", "updateTable", Sql, ex.Message, Form1.loopCounter)
-                Return False
             End Try
-            Return True
         End If
-
+        Return ret
     End Function
 
 

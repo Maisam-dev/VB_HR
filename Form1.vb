@@ -59,7 +59,7 @@ Public Class Form1
         Dim AvisoAnWamas = ACSdb.gettable(Definition.selectAvisoAnWamas)
         If orcdb.insertInTable(AvisoAnWamas, "AVISIN") Then
             Dim vals = ACSdb.getIdlistFromTable(AvisoAnWamas, "MESSAGEID")
-            ACSdb.updateTable("AvisoAnWamas", "AVStatus", 5, "MESSAGEID", vals)
+            ACSdb.updateTable("AvisoAnWamas", "TELEGRAMSTATE", 5, "MESSAGEID", vals)
         End If
 
         'einlegerungen

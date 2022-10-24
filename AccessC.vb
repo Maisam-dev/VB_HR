@@ -165,9 +165,9 @@ Public Class AccessC
         End If
         Dim Trans As OleDbTransaction = Nothing
         Dim cmd As New OleDbCommand()
-        Dim sql = " insert into " & ToTable
-        Dim col As String = " (["
-        Dim values As String = "(@"
+        Dim sql = ""
+        Dim col As String = ""
+        Dim values As String = ""
         Dim ret = False
         Try
             'schreib in DB
@@ -177,24 +177,30 @@ Public Class AccessC
             Trans = Acsdb.BeginTransaction()
             For row As Integer = 0 To fromTable.Count - 1
 
-                For Each ModKey As DictionaryEntry In fromTable(row)
-                    If row = 0 Then
-                        col += ModKey.Key.ToString & "],["
-                        values += ModKey.Key.ToString & ", @"
-                    End If
+                sql = " insert into " & ToTable
+                col = " (["
+                values = "(@"
 
-                    cmd.Parameters.AddWithValue("@" & ModKey.Key.ToString, fromTable(row)(ModKey.Key.ToString))
+                For Each ModKey As DictionaryEntry In fromTable(row)
+                    '  If row = 0 Then
+                    col += ModKey.Key.ToString & "],["
+                        values += ModKey.Key.ToString & ", @"
+                    ' End If
+
+                    cmd.Parameters.Add("@" & ModKey.Key.ToString, fromTable(row)(ModKey.Key.ToString))
                 Next
-                If row = 0 Then
-                    col = col.Substring(0, col.Length - 2) & ")"
+                'If row = 0 Then
+                col = col.Substring(0, col.Length - 2) & ")"
                     values = values.Substring(0, values.Length - 3) & ")"
 
                     sql += col & " values " & values
                     cmd.CommandText = sql
-                    cmd.Transaction = Trans
-                End If
+                cmd.Transaction = Trans
+                'End If
 
                 cmd.ExecuteNonQuery()
+                cmd.Parameters.Clear()
+
             Next
 
             Trans.Commit()

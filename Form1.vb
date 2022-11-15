@@ -20,6 +20,8 @@ Public Class Form1
         Dim MOVEMENTORDEROUT = Nothing
         Dim MOVEMENTORDEROUTIdList = Nothing
         Dim EINLAGERUNGSMELDUNG = Nothing
+        Dim LOCKOUT = Nothing
+        Dim LOCKOUTLIST = Nothing
 
         'Artikelout 
         ArtikelOut = orcdb.getTable(" SELECT * FROM Artikelout WHERE TELEGRAMSTATE =0 ") 'lesen oracle ArtikleOut
@@ -68,6 +70,28 @@ Public Class Form1
             Dim EINLAGERUNGSMELDUNGList = orcdb.getMsgIdAndOrderId(EINLAGERUNGSMELDUNG)
             orcdb.updateTable("EINLAGERUNGSMELDUNG", "TELEGRAMSTATE", 1, EINLAGERUNGSMELDUNGList("MESSAGEID"))
         End If
+
+        ' AuslagerungsSpern lesen
+        Dim tblAuslagerungssperren = ACSdb.gettable(Definition.selectTblAuslqagerungssperren)
+        If orcdb.insertInTable(tblAuslagerungssperren, "LOCKIN") Then
+            Dim vals = ACSdb.getIdlistFromTable(tblAuslagerungssperren, "MESSAGEID")
+            ACSdb.updateTable("tblAuslagerungssperren", "TELEGRAMSTATE", 5, "MESSAGEID", vals)
+        End If
+
+        ' lockout lesen 
+        LOCKOUT = orcdb.getTable(Definition.selectLOCKOUT)
+        LOCKOUTLIST = orcdb.getMsgIdAndOrderId(LOCKOUT) 'gib Lockout orderid als table zurück
+        If ACSdb.insertInTable(LOCKOUT, "tblAuslagerungssperrenRückmeldungen") Then
+            orcdb.updateTable("LOCKOUt", "TELEGRAMSTATE", 1, LOCKOUTLIST("MESSAGEID"))
+            orcdb.updateTable("LOCKOUt", "TELEGRAMSTATE", 1, LOCKOUTLIST("MESSAGEIDFehle"))
+            'update tblAuslagerungssperrenRückmeldungen
+            ACSdb.updateTable("tblAuslagerungssperrenRückmeldungen", "TELEGRAMSTATE", 10, "ORDERID", LOCKOUTLIST("ORDERID"))
+            ACSdb.updateTable("tblAuslagerungssperrenRückmeldungen", "TELEGRAMSTATE", 12, "ORDERID", LOCKOUTLIST("ORDERIDFehle"))
+        End If
+
+
+
+
         ret = True
         Return ret
     End Function

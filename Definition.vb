@@ -61,9 +61,10 @@ SELECT
         CHARGE ,
         ERRORID ,
         ERRORTEXT ,
-        ORDERID ,
+        ORDERID,
         PALLETID,
-        PRODUKTIONSDATUM
+        PRODUKTIONSDATUM, 
+        ABGABEPLATZ
         FROM MOVEMENTORDEROUT
  WHERE TELEGRAMSTATE = 0
 "
@@ -109,9 +110,42 @@ select
         MANDANTENGLN,
         PALLETID,
         PRODUKTIONSDATUM,
-        SDGNR,
-        CREATED 
+        SDGNR
 from EINLAGERUNGSMELDUNG 
  WHERE TELEGRAMSTATE = 0
 "
+
+    Public Shared selectTblAuslqagerungssperren As String = "
+select 
+   MESSAGEID,
+   TELEGRAMSTATE,
+   TELEGRAMTYPE,
+   ARTIKELID,
+   BIB,
+   CHARGE,
+   INFOTEXT,
+   LOCATION,
+   PALLETID,
+   USER_VOG
+From  tblAuslagerungssperren
+ WHERE TELEGRAMSTATE = 0
+"
+
+    Public Shared selectLOCKOUT As String = "
+SELECT 
+          TELEGRAMTYPE,
+          ARTIKELID,
+          BIB,
+          CHARGE,
+          ORDERID,
+          MESSAGEID,
+          ERRORID ,
+          ERRORTEXT ,
+          INFOTEXT,
+          LOCATION,
+          PALLETID,
+          USER_VOG 
+FROM LOCKOUt WHERE TELEGRAMSTATE = 0  
+"
+
 End Class

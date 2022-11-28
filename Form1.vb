@@ -5,12 +5,15 @@ Imports Oracle.ManagedDataAccess.Types
 
 Public Class Form1
     Public loopCounter As Integer = 0
+    Public ActKz As Boolean = False
 
     Function DatenSchnittstelle() As Boolean
 
         Start.BackColor = Color.Green
-        Dim ret As Boolean = False
+        Start.Refresh()
+        ActKz = True
 
+        Dim ret As Boolean = False
         Dim ACSdb As New AccessC()
         Dim orcdb As New Oracdb()
         Dim ArtikelAnWamas = Nothing
@@ -89,32 +92,18 @@ Public Class Form1
             ACSdb.updateTable("tblAuslagerungssperrenRückmeldungen", "TELEGRAMSTATE", 12, "ORDERID", LOCKOUTLIST("ORDERIDFehle"))
         End If
 
-
-
-
+        ActKz = False
+        Start.BackColor = Color.Red
+        Start.Refresh()
         ret = True
         Return ret
     End Function
 
-    Private Sub Start_Click(sender As Object, e As EventArgs) Handles Start.Click
-        Do While True
+
+    Private Sub Timer_Tick(sender As Object, e As EventArgs) Handles Timer.Tick
+        If ActKz = False Then
             DatenSchnittstelle()
-            Start.BackColor = Color.Red
-            Threading.Thread.Sleep(20000)
-        Loop
-
-        ' Break(sender, e)
-
-    End Sub
-
-
-    Private Sub Break(sender As Object, e As EventArgs)
-
-        Start.BackColor = Color.Red
-        loopCounter += 1
-        Threading.Thread.Sleep(10000)
-        Start_Click(sender, e)
-
+        End If
     End Sub
 
 End Class

@@ -22,7 +22,9 @@ Partial Class Form1
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
+        Me.components = New System.ComponentModel.Container()
         Me.Start = New System.Windows.Forms.Button()
+        Me.Timer = New System.Windows.Forms.Timer(Me.components)
         Me.SuspendLayout()
         '
         'Start
@@ -34,6 +36,11 @@ Partial Class Form1
         Me.Start.TabIndex = 0
         Me.Start.Text = "Start"
         Me.Start.UseVisualStyleBackColor = False
+        '
+        'Timer
+        '
+        Me.Timer.Enabled = True
+        Me.Timer.Interval = 15000
         '
         'Form1
         '
@@ -48,4 +55,5 @@ Partial Class Form1
     End Sub
 
     Friend WithEvents Start As Button
+    Friend WithEvents Timer As Timer
 End Class

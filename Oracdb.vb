@@ -99,8 +99,9 @@ Public Class Oracdb
         Catch ex As Exception
             Trans.Rollback()
             conn.Close()
-            pt.put("Oracdb", "insertArtikelIn", query, ex.Message, Form1.loopCounter)
-            ret = False
+            If pt.put("Oracdb", "insertArtikelIn", query, ex.Message, Form1.loopCounter) = 2 Then
+                ret = True
+            End If
         End Try
         Return ret
 
@@ -280,7 +281,9 @@ Public Class Oracdb
             ' MsgBox(ex.Message)
             Console.WriteLine(ex.Message)
             ret = False
-            pt.put("Oracdb", "insertInTable", sql, ex.Message, Form1.loopCounter)
+            If pt.put("Oracdb", "insertInTable", sql, ex.Message, Form1.loopCounter) = 2 Then 'Unique Error
+                ret = True
+            End If
         Finally
             conn.Close()
         End Try

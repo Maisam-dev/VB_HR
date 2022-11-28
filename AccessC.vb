@@ -210,13 +210,13 @@ Public Class AccessC
             Trans.Rollback()
             'MsgBox(ex.Message)
             Console.WriteLine(ex.Message)
-            ret = False
-            pt.put("AccessC", "insertInTable", "ToTable " & ToTable, ex.Message, Form1.loopCounter)
+            If pt.put("AccessC", "insertInTable", "ToTable " & ToTable, ex.Message, Form1.loopCounter) = 2 Then
+                ret = True
+            End If
         Finally
             Acsdb.Close()
         End Try
         Return ret
-
     End Function
 
 End Class

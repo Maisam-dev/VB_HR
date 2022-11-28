@@ -10,12 +10,9 @@ Public Class Form1
     Function DatenSchnittstelle() As Boolean
 
         Start.BackColor = Color.Green
-<<<<<<< Updated upstream
         Start.Refresh()
         ActKz = True
 
-=======
->>>>>>> Stashed changes
         Dim ret As Boolean = False
         Dim ACSdb As New AccessC()
         Dim orcdb As New Oracdb()
@@ -95,12 +92,9 @@ Public Class Form1
             ACSdb.updateTable("tblAuslagerungssperrenRückmeldungen", "TELEGRAMSTATE", 12, "ORDERID", LOCKOUTLIST("ORDERIDFehle"))
         End If
 
-<<<<<<< Updated upstream
         ActKz = False
         Start.BackColor = Color.Red
         Start.Refresh()
-=======
->>>>>>> Stashed changes
         ret = True
         Return ret
     End Function

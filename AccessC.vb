@@ -2,7 +2,7 @@
 Public Class AccessC
 
     Private query As String = Nothing
-    Shared ACSpath As String = "\\10.41.1.42\lagerverwaltung" ' My.Application.Info.DirectoryPath todo 
+    Shared ACSpath As String = My.Application.Info.DirectoryPath 'todo  "\\10.41.1.42\lagerverwaltung" '
     Protected Shared Acsdb As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & ACSpath & "\VogHrl.accdb")
     Protected Shared Voglag As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & ACSpath & "\Voglag.accdb")
 

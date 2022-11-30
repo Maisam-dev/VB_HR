@@ -15,7 +15,8 @@ Public Class Form1
 
         Dim ret As Boolean = False
         Dim ACSdb As New AccessC()
-        Dim orcdb As New Oracdb()
+        Dim oracleConnectDaten = ACSdb.getOracleConnectDaten(Definition.selectEinstellung)
+        Dim orcdb As New Oracdb(oracleConnectDaten("Server"), oracleConnectDaten("User"), oracleConnectDaten("Pass"))
         Dim ArtikelAnWamas = Nothing
         Dim ArtikelOut = Nothing
         Dim ArtikelAnWamasid = Nothing
@@ -97,6 +98,7 @@ Public Class Form1
         Start.Refresh()
         ret = True
         Return ret
+
     End Function
 
 

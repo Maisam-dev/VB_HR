@@ -148,4 +148,12 @@ SELECT
 FROM LOCKOUt WHERE TELEGRAMSTATE = 0  
 "
 
+    Public Shared selectEinstellung As String = "
+ SELECT  
+       oracleServer, 
+       oracleUser, 
+       oraclepass 
+FROM einstellung
+"
+
 End Class

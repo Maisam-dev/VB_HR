@@ -2,13 +2,15 @@
 Imports Oracle.ManagedDataAccess.Client
 
 Public Class Oracdb
-    Private oradb As String = "Data Source = voglin.vog.local:1521/SAT.voglin.vog.local;Persist Security Info=True;User ID=VOG;Password=cFx2HdKmY0h#eZ58LOvKq"
-    '"Data Source = svatlihrl03.vog.local:1521/SAT.voglinz-test.wamas.com;Persist Security Info=True;User ID=wamas;Password=wamas"
-    Private conn As New OracleConnection(oradb)
+    Private oradb As String
+    Public conn
+    ' Private oradb As String = "Data Source = voglin.vog.local:1521/SAT.voglin.vog.local;Persist Security Info=True;User ID=VOG;Password=cFx2HdKmY0h#eZ58LOvKq"
+    '"Data Source = svatlihrl03.vog.local:1521/SAT.voglinz-test.wamas.com;Persist Security Info=True;User ID=wamas;Password=wamas" '
 
-    '  Public Sub New()
-
-    '  End Sub
+    Public Sub New(server As String, user As String, pass As String)
+        oradb = "Data Source = " & server & ";Persist Security Info=True;User ID=" & user & ";Password=" & pass
+        conn = New OracleConnection(oradb)
+    End Sub
 
     '
     '

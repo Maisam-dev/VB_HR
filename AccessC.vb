@@ -2,9 +2,9 @@
 Public Class AccessC
 
     Private query As String = Nothing
-    Protected Shared Acsdb As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=\\10.41.1.42\lagerverwaltung\VogHrl.accdb") 'TODO 
-
-
+    Shared ACSpath As String = "\\10.41.1.42\lagerverwaltung" ' My.Application.Info.DirectoryPath todo 
+    Protected Shared Acsdb As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & ACSpath & "\VogHrl.accdb")
+    Protected Shared Voglag As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & ACSpath & "\Voglag.accdb")
 
     'Public Sub New(sql As String)
     '    query = sql
@@ -218,5 +218,38 @@ Public Class AccessC
         End Try
         Return ret
     End Function
+
+    Public Function getOracleConnectDaten(query As String) As Hashtable
+
+        Dim ret = Nothing
+        Dim ht As New Hashtable()
+        Dim htrow As New Hashtable()
+        Dim rowNr As Integer = 0
+        If Not String.IsNullOrWhiteSpace(query) Then
+            Try
+                Voglag.Open()
+                Dim Commd As New OleDbCommand(query, Voglag)
+                Dim reader As OleDbDataReader
+                reader = Commd.ExecuteReader()
+                reader.Read()
+                If reader.HasRows Then
+                    ht.Add("Server", reader.Item("OracleServer"))
+                    ht.Add("User", reader.Item("OracleUser"))
+                    ht.Add("Pass", reader.Item("OraclePass"))
+                End If
+                ret = ht
+                Voglag.Close()
+            Catch ex As Exception
+                'MsgBox(ex.Message)
+                Console.WriteLine(ex.Message)
+                Voglag.Close()
+                ret = Nothing
+                pt.put("AccessC", "getOracleConnectDaten", query, ex.Message, Form1.loopCounter)
+            End Try
+        End If
+        Return ret
+
+    End Function
+
 
 End Class

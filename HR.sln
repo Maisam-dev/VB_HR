@@ -7,6 +7,8 @@ Project("{778DAE3C-4631-46EA-AA77-85C1314464D9}") = "HR", "HR.vbproj", "{BE416D0
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SetupHR", "..\SetupHR\SetupHR.vdproj", "{517588F4-A2E7-441E-9FC6-1F456630D40F}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SetupTest", "..\SetupTest\SetupTest.vdproj", "{6A7AFA10-3F2E-4510-8477-D7F8BC1F7A32}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +21,8 @@ Global
 		{BE416D06-5968-49E4-9A34-32453053876D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{517588F4-A2E7-441E-9FC6-1F456630D40F}.Debug|Any CPU.ActiveCfg = Debug
 		{517588F4-A2E7-441E-9FC6-1F456630D40F}.Release|Any CPU.ActiveCfg = Release
+		{6A7AFA10-3F2E-4510-8477-D7F8BC1F7A32}.Debug|Any CPU.ActiveCfg = Debug
+		{6A7AFA10-3F2E-4510-8477-D7F8BC1F7A32}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

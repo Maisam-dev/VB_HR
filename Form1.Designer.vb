@@ -25,6 +25,8 @@ Partial Class Form1
         Me.components = New System.ComponentModel.Container()
         Me.Start = New System.Windows.Forms.Button()
         Me.Timer = New System.Windows.Forms.Timer(Me.components)
+        Me.lb1 = New System.Windows.Forms.Label()
+        Me.lb2 = New System.Windows.Forms.Label()
         Me.SuspendLayout()
         '
         'Start
@@ -42,18 +44,39 @@ Partial Class Form1
         Me.Timer.Enabled = True
         Me.Timer.Interval = 15000
         '
+        'lb1
+        '
+        Me.lb1.AutoSize = True
+        Me.lb1.Location = New System.Drawing.Point(5, 110)
+        Me.lb1.Name = "lb1"
+        Me.lb1.Size = New System.Drawing.Size(0, 15)
+        Me.lb1.TabIndex = 1
+        '
+        'lb2
+        '
+        Me.lb2.AutoSize = True
+        Me.lb2.Location = New System.Drawing.Point(5, 82)
+        Me.lb2.Name = "lb2"
+        Me.lb2.Size = New System.Drawing.Size(0, 15)
+        Me.lb2.TabIndex = 2
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(7.0!, 15.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(346, 120)
+        Me.ClientSize = New System.Drawing.Size(311, 146)
+        Me.Controls.Add(Me.lb2)
+        Me.Controls.Add(Me.lb1)
         Me.Controls.Add(Me.Start)
         Me.Name = "Form1"
         Me.Text = "Schnittstelle"
         Me.ResumeLayout(False)
+        Me.PerformLayout()
 
     End Sub
 
     Friend WithEvents Start As Button
     Friend WithEvents Timer As Timer
+    Friend WithEvents lb1 As Label
+    Friend WithEvents lb2 As Label
 End Class

@@ -57,7 +57,7 @@ Public Class AccessC
     Public Function updateTable(table As String, statusSpalte As String, status As Integer, whereSpalte As String, values As String) As Boolean
         Dim query As String = ""
         Dim ret = False
-        If Not String.IsNullOrWhiteSpace(values) And Not values.Equals("()") Then
+        If Not String.IsNullOrWhiteSpace(values) And Not values.Equals("()") And Not values.Contains("()") Then
 
             Try
                 Acsdb.Open()
@@ -67,7 +67,6 @@ Public Class AccessC
                 ret = True
                 Acsdb.Close()
             Catch ex As Exception
-                'MsgBox(ex.Message)
                 Console.WriteLine(ex.Message)
                 Acsdb.Close()
                 ret = False

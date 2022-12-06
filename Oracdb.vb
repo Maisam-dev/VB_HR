@@ -163,7 +163,7 @@ Public Class Oracdb
         Dim Sql = "update " & TableName & " set " & spalteStatus & " = " & wert & " where MESSAGEID in " & values
         Dim cmd As New OracleCommand(Sql, conn)
         Dim ret As Boolean = False
-        If Not String.IsNullOrEmpty(values) And Not values.Equals("()") Then
+        If Not String.IsNullOrEmpty(values) And Not values.Equals("()") And Not values.Contains("()") Then
             Try
                 cmd.CommandType = CommandType.Text
                 conn.Open()
@@ -284,7 +284,7 @@ Public Class Oracdb
             ' MsgBox(ex.Message)
             Console.WriteLine(ex.Message)
             ret = False
-            If pt.put("Oracdb", "insertInTable", sql, ex.Message, Form1.loopCounter) = 2 Then 'Unique Error
+            If pt.put("Oracdb", "insertInTable", sql, ex.Message, Form1.loopCounter) = 2 Then 'Unique Error ignorieren 
                 ret = True
             End If
         Finally

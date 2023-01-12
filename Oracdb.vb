@@ -13,21 +13,35 @@ Public Class Oracdb
     End Sub
 
     '
-    '
+    ' hier muss ich teste  ob es funktioniert wird bei mehr 1000 Datensätze ?
     '
     Public Function insertArtikelIn(table As Hashtable) As Boolean
         Dim ret As Boolean = False
+        Dim rund As Integer = Math.Round(table.Count / 1000 + 0.5)
+        Dim start As Integer = 0
+        Dim finsh As Integer = 999
         If table.Count < 1 Then
             Return ret
         End If
-        Dim query As String = " insert all "
+        Dim query As String = Nothing
         Dim values As String = Nothing
         Dim into As String = Nothing
         Dim cmd As New OracleCommand
         Dim Trans As OracleTransaction = Nothing
 
-        For row As Integer = 0 To table.Count - 1
-            values = "('" &
+        ' Begin:Artikel count teilen
+        Try
+            conn.Open()
+            Trans = conn.BeginTransaction()
+            For r As Integer = 0 To rund
+                rund -= 1
+                query = " insert all "
+                If rund = 0 Then
+                    finsh = table.Count - 1
+                End If
+                'End: Artikel count teilen
+                For row As Integer = start To finsh
+                    values = "('" &
                       table(row)("ID") & "','" &
                       table(row)("BIB") & "','" &
                       table(row)("ARTIKELID") & "','" &
@@ -37,9 +51,9 @@ Public Class Oracdb
                       "sysdate," &
                       "sysdate)"
 
-            If Not table(row)("TELEGRAMTYPE").Equals("LÖSCHUNG") Then
-                values = values.Substring(0, values.Length - 1) & ",'"
-                values += table(row)("BEZEICHNUNG") & "','" &
+                    If Not table(row)("TELEGRAMTYPE").Equals("LÖSCHUNG") Then
+                        values = values.Substring(0, values.Length - 1) & ",'"
+                        values += table(row)("BEZEICHNUNG") & "','" &
                       table(row)("VECOLLI") & "','" &
                       table(row)("COLLIPALETTE") & "','" &
                       table(row)("COLLIEAN") & "','" &
@@ -52,9 +66,9 @@ Public Class Oracdb
                       table(row)("LAGEROPTION") & "','" &
                       table(row)("ABCKLASSE") & "'" &
                       ")"
-            End If
+                    End If
 
-            into = "
+                    into = "
                      INTO ARTIKELIN ( 
                                      MESSAGEID,
                                      BIB,
@@ -65,9 +79,9 @@ Public Class Oracdb
                                      CREATED,
                                      UPDATED)"
 
-            If Not table(row)("TELEGRAMTYPE").Equals("LÖSCHUNG") Then
-                into = into.Substring(0, into.Length - 1) & ","
-                into += "
+                    If Not table(row)("TELEGRAMTYPE").Equals("LÖSCHUNG") Then
+                        into = into.Substring(0, into.Length - 1) & ","
+                        into += "
                                      BEZEICHNUNG,
                                      VECOLLI ,
                                      COLLIPALETTE,
@@ -81,21 +95,21 @@ Public Class Oracdb
                                      lageroption,
                                      ABCKLASSE
                                      )"
-            End If
+                    End If
 
-            into += " VALUES " & values
-            query += into
-        Next
+                    into += " VALUES " & values
+                    query += into
+                Next
 
-        query += "select 1 from Dual"
-
-        Try
-            conn.Open()
-            Trans = conn.BeginTransaction()
-            cmd.Connection = conn
-            cmd.CommandText = query
-            cmd.CommandType = CommandType.Text
-            cmd.ExecuteNonQuery()
+                query += "select 1 from Dual"
+                cmd.Connection = conn
+                cmd.CommandText = query
+                cmd.CommandType = CommandType.Text
+                cmd.ExecuteNonQuery()
+                ' Begin:Artikel count teilen
+                start = finsh + 1
+                finsh += 1000
+            Next
             Trans.Commit()
             conn.Close()
             ret = True
@@ -106,10 +120,105 @@ Public Class Oracdb
                 ret = True
             End If
         End Try
+        'End: Artikel count teilen
         Return ret
-
     End Function
 
+    'Allte Function was nicht mehr 1000 Datensäte gibt
+    'Public Function insertArtikelIn(table As Hashtable) As Boolean
+    '    Dim ret As Boolean = False
+    '    If table.Count < 1 Then
+    '        Return ret
+    '    End If
+    '    Dim query As String = " insert all "
+    '    Dim values As String = Nothing
+    '    Dim into As String = Nothing
+    '    Dim cmd As New OracleCommand
+    '    Dim Trans As OracleTransaction = Nothing
+
+    '    For row As Integer = 0 To table.Count - 1
+    '        values = "('" &
+    '                  table(row)("ID") & "','" &
+    '                  table(row)("BIB") & "','" &
+    '                  table(row)("ARTIKELID") & "','" &
+    '                  table(row)("TELEGRAMTYPE") & "','" &
+    '                  table(row)("ABCKLASSE") & "','" &
+    '                  "0'," &
+    '                  "sysdate," &
+    '                  "sysdate)"
+
+    '        If Not table(row)("TELEGRAMTYPE").Equals("LÖSCHUNG") Then
+    '            values = values.Substring(0, values.Length - 1) & ",'"
+    '            values += table(row)("BEZEICHNUNG") & "','" &
+    '                  table(row)("VECOLLI") & "','" &
+    '                  table(row)("COLLIPALETTE") & "','" &
+    '                  table(row)("COLLIEAN") & "','" &
+    '                  table(row)("FIFO") & "','" &
+    '                  table(row)("GEWICHT_KARTON") & "','" &
+    '                  table(row)("MHDPFLICHT") & "','" &
+    '                  table(row)("AVISOPFLICHT") & "','" &
+    '                  table(row)("CHARGENPFLICHT") & "','" &
+    '                  table(row)("HOCHREGALFAEHIG") & "','" &
+    '                  table(row)("LAGEROPTION") & "','" &
+    '                  table(row)("ABCKLASSE") & "'" &
+    '                  ")"
+    '        End If
+
+    '        into = "
+    '                 INTO ARTIKELIN ( 
+    '                                 MESSAGEID,
+    '                                 BIB,
+    '                                 ARTIKELID,
+    '                                 TELEGRAMTYPE,
+    '                                 ABCKLASSE,
+    '                                 TELEGRAMSTATE,
+    '                                 CREATED,
+    '                                 UPDATED)"
+
+    '        If Not table(row)("TELEGRAMTYPE").Equals("LÖSCHUNG") Then
+    '            into = into.Substring(0, into.Length - 1) & ","
+    '            into += "
+    '                                 BEZEICHNUNG,
+    '                                 VECOLLI ,
+    '                                 COLLIPALETTE,
+    '                                 COLLIEAN,
+    '                                 FIFO,
+    '                                 GEWICHT_KARTON,
+    '                                 MHDPFLICHT,
+    '                                 AVISOPFLICHT,
+    '                                 CHARGENPFLICHT,
+    '                                 HOCHREGALFAEHIG,
+    '                                 lageroption,
+    '                                 ABCKLASSE
+    '                                 )"
+    '        End If
+
+    '        into += " VALUES " & values
+    '        query += into
+    '    Next
+
+    '    query += "select 1 from Dual"
+
+    '    Try
+    '        conn.Open()
+    '        Trans = conn.BeginTransaction()
+    '        cmd.Connection = conn
+    '        cmd.CommandText = query
+    '        cmd.CommandType = CommandType.Text
+    '        cmd.ExecuteNonQuery()
+    '        Trans.Commit()
+    '        conn.Close()
+    '        ret = True
+    '    Catch ex As Exception
+    '        Trans.Rollback()
+    '        conn.Close()
+    '        If pt.put("Oracdb", "insertArtikelIn", query, ex.Message, Form1.loopCounter) = 2 Then
+    '            ret = True
+    '        End If
+    '    End Try
+    '    Return ret
+
+    'End Function
     '
     '
     '
@@ -298,15 +407,17 @@ Public Class Oracdb
 
     '
     '
+    'status_8 bei True wird prüfen ob die Spalte "PalletId" bei Fehle nicht leer, wenn ja wird die Status auf 8 erstezen statt 12
     '
-    '
-    Public Function getMsgIdAndOrderId(table As Hashtable) As Hashtable
+    Public Function getMsgIdAndOrderId(table As Hashtable, Optional status_8 As Boolean = False) As Hashtable
 
         Dim Linst As New Hashtable()
         Dim MESSAGEIDFehle As String = ""
         Dim ORDERIDFehle As String = ""
         Dim ORDERID As String = ""
         Dim MESSAGEID As String = ""
+        Dim MESSAGEID_8 As String = ""
+        Dim ORDERID_8 As String = ""
         Dim start As Integer = 0
         Dim end_ As Integer = 999
         Dim round As Integer = 0
@@ -317,6 +428,8 @@ Public Class Oracdb
 
             MESSAGEIDFehle = "( "
             ORDERIDFehle = "( "
+            MESSAGEID_8 = "( "
+            ORDERID_8 = "( "
             ORDERID = "( "
             MESSAGEID = "( "
             round = Math.Round((table.Count / 1000) + 0.5)
@@ -333,13 +446,18 @@ Public Class Oracdb
                     If table(row).ContainsKey("ERRORID") Then
 
                         If Not String.IsNullOrEmpty(table(row)("ERRORID").ToString) Then
-                            MESSAGEIDFehle += table(row)("MESSAGEID") & ","
-                            ORDERIDFehle += table(row)("ORDERID") & ","
+                            ' prüfen die Palte id muss prüfen Table Name Move
+                            If status_8 And isPalletID(table(row)("PALLETID").ToString) Then
+                                MESSAGEID_8 += table(row)("MESSAGEID") & ","
+                                ORDERID_8 += table(row)("ORDERID") & ","
+                            Else
+                                MESSAGEIDFehle += table(row)("MESSAGEID") & ","
+                                ORDERIDFehle += table(row)("ORDERID") & ","
+                            End If
                         Else
                             MESSAGEID += table(row)("MESSAGEID") & ","
                             ORDERID += table(row)("ORDERID") & ","
                         End If
-
                     Else
                         MESSAGEID += table(row)("MESSAGEID") & ","
                         ORDERID += table(row)("ORDERID") & ","
@@ -348,7 +466,9 @@ Public Class Oracdb
 
                 MESSAGEIDFehle = closeVal(MESSAGEIDFehle)
                 MESSAGEID = closeVal(MESSAGEID)
+                MESSAGEID_8 = closeVal(MESSAGEID_8)
                 ORDERIDFehle = closeVal(ORDERIDFehle)
+                ORDERID = closeVal(ORDERID)
                 ORDERID = closeVal(ORDERID)
 
                 If orValcounter > 0 Then
@@ -358,6 +478,8 @@ Public Class Oracdb
                     MESSAGEID += get_ORVal(MESSAGEID)
                     ORDERIDFehle += get_ORVal(ORDERIDFehle)
                     ORDERID += get_ORVal(ORDERID)
+                    MESSAGEID_8 += get_ORVal(MESSAGEID_8)
+                    ORDERID_8 += get_ORVal(ORDERID_8)
                 End If
             Next
         End If
@@ -366,10 +488,11 @@ Public Class Oracdb
         Linst.Add("ORDERIDFehle", ORDERIDFehle)
         Linst.Add("MESSAGEID", MESSAGEID)
         Linst.Add("ORDERID", ORDERID)
+        Linst.Add("MESSAGEID_8", MESSAGEID_8)
+        Linst.Add("ORDERID_8", ORDERID_8)
         Return Linst
 
     End Function
-
     '
     '
     '
@@ -382,8 +505,6 @@ Public Class Oracdb
         End If
         Return ret
     End Function
-
-
     '
     '
     '
@@ -394,6 +515,11 @@ Public Class Oracdb
         End If
         Return ret
     End Function
-
+    '
+    '
+    '
+    Public Function isPalletID(ID As String) As Boolean
+        Return Not String.IsNullOrWhiteSpace(ID)
+    End Function
 
 End Class

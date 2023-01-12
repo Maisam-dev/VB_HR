@@ -57,11 +57,11 @@ Public Class AccessC
     Public Function updateTable(table As String, statusSpalte As String, status As Integer, whereSpalte As String, values As String) As Boolean
         Dim query As String = ""
         Dim ret = False
-        If Not String.IsNullOrWhiteSpace(values) And Not values.Equals("()") And Not values.Contains("()") Then
+        If Not String.IsNullOrWhiteSpace(values) And Not values.Contains("()") Then
 
             Try
                 Acsdb.Open()
-                query = "update " & table & " set " & statusSpalte & " = " & status & " where " & whereSpalte & " in " & values.Replace("MESSAGEID", whereSpalte) & " and " & statusSpalte & " <> 12 " ' TODO
+                query = "update " & table & " set " & statusSpalte & " = " & status & " where " & whereSpalte & " in " & values.Replace("MESSAGEID", whereSpalte) & " and " & statusSpalte & " <> 12 "
                 Dim Commd As New OleDbCommand(query, Acsdb)
                 Commd.ExecuteNonQuery()
                 ret = True

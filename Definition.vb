@@ -110,7 +110,8 @@ select
         MANDANTENGLN,
         PALLETID,
         PRODUKTIONSDATUM,
-        SDGNR
+        SDGNR,
+        BEWEGUNGSART
 from EINLAGERUNGSMELDUNG 
  WHERE TELEGRAMSTATE = 0
 "
@@ -154,6 +155,16 @@ FROM LOCKOUt WHERE TELEGRAMSTATE = 0
        oracleUser, 
        oraclepass 
 FROM einstellung
+"
+
+    Public Shared selectAvisoOut As String = "
+         select 
+            MESSAGEID,
+            ORDERID,
+            ERRORID,
+            ERRORTEXT
+         from Avisout
+         WHERE TELEGRAMSTATE = 0            
 "
 
 End Class

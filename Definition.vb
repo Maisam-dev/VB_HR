@@ -53,6 +53,10 @@ SELECT
 from TblAnWamas where AHStat = 0 
 "
 
+    Public Shared selectTblArtikelAnwamas As String = "
+          select * 
+          from tblArtikelAnwamas 
+          where artstatus = 0 "
 
     Public Shared selectMOVEMENTORDEROUt As String = "
 SELECT

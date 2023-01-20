@@ -53,7 +53,7 @@ Public Class WR
     Public Function insertinArtikelInFromArtikelAnWamas()
         'schreiben im Oracle ArtikelIn
         Dim ret As Boolean = False
-        ArtikelAnWamas = ACSdb.gettable("select * from tblArtikelAnwamas where artstatus = 0 ")    'lesen ArtikelAnWamas
+        ArtikelAnWamas = ACSdb.gettable(Definition.selectTblArtikelAnwamas)    'lesen ArtikelAnWamas
         ArtikelAnWamasid = ACSdb.getIdlistFromTable(ArtikelAnWamas, "ID")
         If orcdb.insertArtikelIn(ArtikelAnWamas) = True Then ' todo 
             ACSdb.updateTable("tblArtikelAnWamas", "artStatus", 5, "ID", ArtikelAnWamasid) 'update tblArtikelAnwamas

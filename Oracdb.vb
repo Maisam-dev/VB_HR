@@ -35,6 +35,9 @@ Public Class Oracdb
             Trans = conn.BeginTransaction()
             For r As Integer = 0 To rund
                 rund -= 1
+                If rund < 0 Then
+                    Exit For
+                End If
                 query = " insert all "
                 If rund = 0 Then
                     finsh = table.Count - 1
@@ -447,9 +450,14 @@ Public Class Oracdb
 
                         If Not String.IsNullOrEmpty(table(row)("ERRORID").ToString) Then
                             ' prüfen die Palte id muss prüfen Table Name Move
-                            If status_8 And isPalletID(table(row)("PALLETID").ToString) Then
-                                MESSAGEID_8 += table(row)("MESSAGEID") & ","
-                                ORDERID_8 += table(row)("ORDERID") & ","
+                            If status_8 Then
+                                If isPalletID(table(row)("PALLETID").ToString) Then
+                                    MESSAGEID_8 += table(row)("MESSAGEID") & ","
+                                    ORDERID_8 += table(row)("ORDERID") & ","
+                                Else
+                                    MESSAGEIDFehle += table(row)("MESSAGEID") & ","
+                                    ORDERIDFehle += table(row)("ORDERID") & ","
+                                End If
                             Else
                                 MESSAGEIDFehle += table(row)("MESSAGEID") & ","
                                 ORDERIDFehle += table(row)("ORDERID") & ","
@@ -464,12 +472,36 @@ Public Class Oracdb
                     End If
                 Next
 
+
+                'For row As Integer = start To end_
+
+                '    If table(row).ContainsKey("ERRORID") Then
+
+                '        If Not String.IsNullOrEmpty(table(row)("ERRORID").ToString) Then
+                '            ' prüfen die Palte id muss prüfen Table Name Move
+                '            If status_8 And isPalletID(table(row)("PALLETID").ToString) Then
+                '                MESSAGEID_8 += table(row)("MESSAGEID") & ","
+                '                ORDERID_8 += table(row)("ORDERID") & ","
+                '            Else
+                '                MESSAGEIDFehle += table(row)("MESSAGEID") & ","
+                '                ORDERIDFehle += table(row)("ORDERID") & ","
+                '            End If
+                '        Else
+                '            MESSAGEID += table(row)("MESSAGEID") & ","
+                '            ORDERID += table(row)("ORDERID") & ","
+                '        End If
+                '    Else
+                '        MESSAGEID += table(row)("MESSAGEID") & ","
+                '        ORDERID += table(row)("ORDERID") & ","
+                '    End If
+                'Next
+
                 MESSAGEIDFehle = closeVal(MESSAGEIDFehle)
                 MESSAGEID = closeVal(MESSAGEID)
                 MESSAGEID_8 = closeVal(MESSAGEID_8)
                 ORDERIDFehle = closeVal(ORDERIDFehle)
                 ORDERID = closeVal(ORDERID)
-                ORDERID = closeVal(ORDERID)
+                ORDERID_8 = closeVal(ORDERID_8)
 
                 If orValcounter > 0 Then
                     start += 1001

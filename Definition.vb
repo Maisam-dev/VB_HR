@@ -49,7 +49,8 @@ SELECT
         [KundenReferenz], 
         [Gewicht], 
         [Artnr], 
-        [Kdnr]
+        [Kdnr],
+        [KOMM_Sdgnr]
 from TblAnWamas where AHStat = 0 
 "
 
@@ -68,7 +69,8 @@ SELECT
         ORDERID,
         PALLETID,
         PRODUKTIONSDATUM, 
-        ABGABEPLATZ
+        ABGABEPLATZ,
+        TELEGRAMTYPE
         FROM MOVEMENTORDEROUT
  WHERE TELEGRAMSTATE = 0
 "

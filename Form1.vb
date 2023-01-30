@@ -6,6 +6,7 @@ Imports Oracle.ManagedDataAccess.Types
 Public Class Form1
     Public loopCounter As Integer = 0
     Public ActKz As Boolean = False
+    Public oracleConnectDaten
 
     Function DatenSchnittstelle() As Boolean
 
@@ -15,8 +16,6 @@ Public Class Form1
 
         Dim ret As Boolean = False
         Dim ACSdb As New AccessC()
-        Dim oracleConnectDaten = ACSdb.getOracleConnectDaten(Definition.selectEinstellung)
-        Dim orcdb As New Oracdb(oracleConnectDaten("Server"), oracleConnectDaten("User"), oracleConnectDaten("Pass"))
         Dim ArtikelAnWamas = Nothing
         Dim ArtikelOut = Nothing
         Dim ArtikelAnWamasid = Nothing
@@ -26,7 +25,7 @@ Public Class Form1
         Dim EINLAGERUNGSMELDUNG = Nothing
         Dim LOCKOUT = Nothing
         Dim LOCKOUTLIST = Nothing
-        Dim wr As New WR
+        Dim wr As New WR(Me.oracleConnectDaten("Server"), Me.oracleConnectDaten("User"), Me.oracleConnectDaten("Pass"))
 
         'Artikelout 
         wr.readArtikelout_AndUpdateTBlArtikelAnWamas()
@@ -82,9 +81,9 @@ Public Class Form1
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         Dim ACSdb As New AccessC()
-        Dim oracleConnectDaten = ACSdb.getOracleConnectDaten(Definition.selectEinstellung)
-        lb2.Text = " USER: " & oracleConnectDaten("User")
-        lb1.Text = "SERVER: " & oracleConnectDaten("Server")
+        Me.oracleConnectDaten = ACSdb.getOracleConnectDaten(Definition.selectEinstellung)
+        lb2.Text = " USER: " & Me.oracleConnectDaten("User")
+        lb1.Text = "SERVER: " & Me.oracleConnectDaten("Server")
     End Sub
 
 End Class

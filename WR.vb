@@ -16,11 +16,10 @@ Public Class WR
     Private LOCKOUT
     Private LOCKOUTLIST
 
-    Public Sub New()
+    Public Sub New(server, user, pass)
         ret = False
         ACSdb = New AccessC()
-        oracleConnectDaten = ACSdb.getOracleConnectDaten(Definition.selectEinstellung)
-        orcdb = New Oracdb(oracleConnectDaten("Server"), oracleConnectDaten("User"), oracleConnectDaten("Pass"))
+        orcdb = New Oracdb(server, user, pass)
         ArtikelAnWamas = Nothing
         ArtikelOut = Nothing
         ArtikelAnWamasid = Nothing

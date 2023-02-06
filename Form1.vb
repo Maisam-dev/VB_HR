@@ -79,7 +79,6 @@ Public Class Form1
     End Sub
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-
         Dim ACSdb As New AccessC()
         Me.oracleConnectDaten = ACSdb.getOracleConnectDaten(Definition.selectEinstellung)
         lb2.Text = " USER: " & Me.oracleConnectDaten("User")

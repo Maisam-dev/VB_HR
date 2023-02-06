@@ -13,7 +13,7 @@ Public Class Oracdb
     '
     ' 
     '
-    Public Function insertArtikelIn(table As Hashtable) As Boolean
+    Public Function insertArtikelIn(table As Object) As Boolean
         Dim ret As Boolean = False
         Dim rund As Integer = Math.Round(table.Count / 1000 + 0.5)
         Dim start As Integer = 0
@@ -21,6 +21,10 @@ Public Class Oracdb
         If table.Count < 1 Then
             Return ret
         End If
+        If TypeOf table Is Boolean AndAlso DirectCast(table, Boolean) = False Or TypeOf table Is Hashtable AndAlso DirectCast(table, Hashtable).Count < 1 Then
+            Return False
+        End If
+
         Dim query As String = Nothing
         Dim values As String = Nothing
         Dim into As String = Nothing
@@ -129,14 +133,14 @@ Public Class Oracdb
     '
     '
     '
-    Public Function getTable(query As String) As Hashtable
+    Public Function getTable(query As String) As Object
 
         Dim cmd As New OracleCommand
         Dim reader As OracleDataReader
         Dim ht As New Hashtable()
         Dim htrow As New Hashtable()
         Dim rowNr As Integer = 0
-        Dim ret = Nothing
+        Dim ret As Object = False
         If Not String.IsNullOrEmpty(query) Then
             Try
                 conn.Open()
@@ -154,16 +158,16 @@ Public Class Oracdb
                         rowNr += 1
                     End While
                     conn.Close()
+                    ret = ht
                 End If
             Catch ex As Exception
                 conn.Close()
-                ret = Nothing
+                ret = False
                 pt.put("Oracdb", "getTable", query, ex.Message, Form1.loopCounter)
             Finally
                 conn.Close()
             End Try
         End If
-        ret = ht
         Return ret
 
     End Function
@@ -199,11 +203,12 @@ Public Class Oracdb
     '
     '
     '
-    Public Function insertInTable(fromTable As Hashtable, ToTable As String, Optional cu_Time As Boolean = False) As Boolean
+    Public Function insertInTable(fromTable As Object, ToTable As String, Optional cu_Time As Boolean = False) As Boolean
 
-        If IsNothing(fromTable) Or fromTable.Count < 1 Then
+        If TypeOf fromTable Is Boolean AndAlso DirectCast(fromTable, Boolean) = False Or TypeOf fromTable Is Hashtable AndAlso DirectCast(fromTable, Hashtable).Count < 1 Then
             Return False
         End If
+
         Dim Trans As OracleTransaction = Nothing
         Dim cmd As New OracleCommand()
         Dim sql = " insert All "
@@ -264,7 +269,7 @@ Public Class Oracdb
     '
     'status_8 bei True wird prüfen ob die Spalte "PalletId" bei Fehler nicht leer ist, wenn ja wird die Status auf 8 erstezen statt 12
     '
-    Public Function getMsgIdAndOrderId(table As Hashtable, Optional status_8 As Boolean = False) As Hashtable
+    Public Function getMsgIdAndOrderId(table As Object, Optional status_8 As Boolean = False) As Hashtable
 
         Dim Linst As New Hashtable()
         Dim MESSAGEIDFehle As String = ""
@@ -278,73 +283,72 @@ Public Class Oracdb
         Dim round As Integer = 0
         Dim orValcounter As Integer = 0
 
+        If Not (TypeOf table Is Boolean AndAlso DirectCast(table, Boolean) = False Or TypeOf table Is Hashtable AndAlso DirectCast(table, Hashtable).Count < 1) Then
 
-        If Not IsNothing(table) And Not table.Count < 1 Then
+                MESSAGEIDFehle = "( "
+                ORDERIDFehle = "( "
+                MESSAGEID_8 = "( "
+                ORDERID_8 = "( "
+                ORDERID = "( "
+                MESSAGEID = "( "
+                round = Math.Round((table.Count / 1000) + 0.5)
+                orValcounter = round
 
-            MESSAGEIDFehle = "( "
-            ORDERIDFehle = "( "
-            MESSAGEID_8 = "( "
-            ORDERID_8 = "( "
-            ORDERID = "( "
-            MESSAGEID = "( "
-            round = Math.Round((table.Count / 1000) + 0.5)
-            orValcounter = round
+                For R As Integer = 1 To round
+                    orValcounter -= 1
+                    If orValcounter = 0 Then
+                        end_ = table.Count - 1
+                    End If
 
-            For R As Integer = 1 To round
-                orValcounter -= 1
-                If orValcounter = 0 Then
-                    end_ = table.Count - 1
-                End If
+                    For row As Integer = start To end_
 
-                For row As Integer = start To end_
+                        If table(row).ContainsKey("ERRORID") Then
 
-                    If table(row).ContainsKey("ERRORID") Then
-
-                        If Not String.IsNullOrEmpty(table(row)("ERRORID").ToString) Then
-                            ' prüfen die Palte id muss prüfen Table Name Move
-                            If status_8 Then
-                                If isPalletID(table(row)("PALLETID").ToString) Then
-                                    MESSAGEID_8 += table(row)("MESSAGEID") & ","
-                                    ORDERID_8 += table(row)("ORDERID") & ","
+                            If Not String.IsNullOrEmpty(table(row)("ERRORID").ToString) Then
+                                ' prüfen die Palte id muss prüfen Table Name Move
+                                If status_8 Then
+                                    If isPalletID(table(row)("PALLETID").ToString) Then
+                                        MESSAGEID_8 += table(row)("MESSAGEID") & ","
+                                        ORDERID_8 += table(row)("ORDERID") & ","
+                                    Else
+                                        MESSAGEIDFehle += table(row)("MESSAGEID") & ","
+                                        ORDERIDFehle += table(row)("ORDERID") & ","
+                                    End If
                                 Else
                                     MESSAGEIDFehle += table(row)("MESSAGEID") & ","
                                     ORDERIDFehle += table(row)("ORDERID") & ","
                                 End If
                             Else
-                                MESSAGEIDFehle += table(row)("MESSAGEID") & ","
-                                ORDERIDFehle += table(row)("ORDERID") & ","
+                                MESSAGEID += table(row)("MESSAGEID") & ","
+                                ORDERID += table(row)("ORDERID") & ","
                             End If
                         Else
                             MESSAGEID += table(row)("MESSAGEID") & ","
                             ORDERID += table(row)("ORDERID") & ","
                         End If
-                    Else
-                        MESSAGEID += table(row)("MESSAGEID") & ","
-                        ORDERID += table(row)("ORDERID") & ","
+                    Next
+
+                    MESSAGEIDFehle = closeVal(MESSAGEIDFehle)
+                    MESSAGEID = closeVal(MESSAGEID)
+                    MESSAGEID_8 = closeVal(MESSAGEID_8)
+                    ORDERIDFehle = closeVal(ORDERIDFehle)
+                    ORDERID = closeVal(ORDERID)
+                    ORDERID_8 = closeVal(ORDERID_8)
+
+                    If orValcounter > 0 Then
+                        start += 1001
+                        end_ += 1001
+                        MESSAGEIDFehle += get_ORVal(MESSAGEIDFehle)
+                        MESSAGEID += get_ORVal(MESSAGEID)
+                        ORDERIDFehle += get_ORVal(ORDERIDFehle)
+                        ORDERID += get_ORVal(ORDERID)
+                        MESSAGEID_8 += get_ORVal(MESSAGEID_8)
+                        ORDERID_8 += get_ORVal(ORDERID_8)
                     End If
                 Next
+            End If
 
-                MESSAGEIDFehle = closeVal(MESSAGEIDFehle)
-                MESSAGEID = closeVal(MESSAGEID)
-                MESSAGEID_8 = closeVal(MESSAGEID_8)
-                ORDERIDFehle = closeVal(ORDERIDFehle)
-                ORDERID = closeVal(ORDERID)
-                ORDERID_8 = closeVal(ORDERID_8)
-
-                If orValcounter > 0 Then
-                    start += 1001
-                    end_ += 1001
-                    MESSAGEIDFehle += get_ORVal(MESSAGEIDFehle)
-                    MESSAGEID += get_ORVal(MESSAGEID)
-                    ORDERIDFehle += get_ORVal(ORDERIDFehle)
-                    ORDERID += get_ORVal(ORDERID)
-                    MESSAGEID_8 += get_ORVal(MESSAGEID_8)
-                    ORDERID_8 += get_ORVal(ORDERID_8)
-                End If
-            Next
-        End If
-
-        Linst.Add("MESSAGEIDFehle", MESSAGEIDFehle)
+            Linst.Add("MESSAGEIDFehle", MESSAGEIDFehle)
         Linst.Add("ORDERIDFehle", ORDERIDFehle)
         Linst.Add("MESSAGEID", MESSAGEID)
         Linst.Add("ORDERID", ORDERID)

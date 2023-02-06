@@ -1,7 +1,7 @@
 ﻿Imports System.Data.OleDb
 Public Class AccessC
 
-    Private query As String = Nothing
+    Private query As String = False
     Shared ACSpath As String = My.Application.Info.DirectoryPath 'todo  "\\10.41.1.42\lagerverwaltung" '
     Protected Shared Acsdb As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & ACSpath & "\VogHrl.accdb")
     Protected Shared Voglag As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & ACSpath & "\Voglag.accdb")
@@ -14,8 +14,8 @@ Public Class AccessC
     '
     '
     '
-    Public Function gettable(query As String) As Hashtable
-        Dim ret = Nothing
+    Public Function gettable(query As String) As Object
+        Dim ret As Object = False
         Dim ht As New Hashtable()
         Dim htrow As New Hashtable()
         Dim rowNr As Integer = 0
@@ -42,7 +42,7 @@ Public Class AccessC
                 'MsgBox(ex.Message)
                 Console.WriteLine(ex.Message)
                 Acsdb.Close()
-                ret = Nothing
+                ret = False
                 pt.put("AccessC", "gettable", query, ex.Message, Form1.loopCounter)
             End Try
         End If
@@ -53,7 +53,6 @@ Public Class AccessC
     '
     '
     '
-
     Public Function updateTable(table As String, statusSpalte As String, status As Integer, whereSpalte As String, values As String) As Boolean
         Dim query As String = ""
         Dim ret = False
@@ -65,10 +64,8 @@ Public Class AccessC
                 Dim Commd As New OleDbCommand(query, Acsdb)
                 Commd.ExecuteNonQuery()
                 ret = True
-                Acsdb.Close()
             Catch ex As Exception
                 Console.WriteLine(ex.Message)
-                Acsdb.Close()
                 ret = False
                 pt.put("AccessC", "updateTable", query, ex.Message, Form1.loopCounter)
             Finally
@@ -82,19 +79,20 @@ Public Class AccessC
     '
     '
     '
-    Public Function getIdlistFromTable(Table As Hashtable, IsSpalte As String) As String
+    Public Function getIdlistFromTable(Table As Object, IsSpalte As String) As String
         Dim IdList As String = " "
-        If IsNothing(Table) Then
+        If (TypeOf Table Is Boolean AndAlso DirectCast(Table, Boolean) = False) Or (TypeOf Table Is Hashtable AndAlso DirectCast(Table, Hashtable).Count < 1) Then
             Return IdList
         End If
+
         If Table.Count > 0 Then
-            IdList = "("
-            For row As Integer = 0 To Table.Count - 1
-                IdList += Table(row)(IsSpalte) & ","
-            Next
-            IdList = IdList.Substring(0, IdList.Length - 1) & ")"
-        End If
-        Return IdList
+                IdList = "("
+                For row As Integer = 0 To Table.Count - 1
+                    IdList += Table(row)(IsSpalte) & ","
+                Next
+                IdList = IdList.Substring(0, IdList.Length - 1) & ")"
+            End If
+            Return IdList
 
     End Function
 
@@ -157,9 +155,9 @@ Public Class AccessC
     '
     '
 
-    Public Function insertInTable(fromTable As Hashtable, ToTable As String) As Boolean
+    Public Function insertInTable(fromTable As Object, ToTable As String) As Boolean
 
-        If IsNothing(fromTable) Or Not fromTable.Count > 0 Then
+        If (TypeOf fromTable Is Boolean AndAlso DirectCast(fromTable, Boolean) = False) Or (TypeOf fromTable Is Hashtable AndAlso DirectCast(fromTable, Hashtable).Count < 1) Then
             Return False
         End If
         Dim Trans As OleDbTransaction = Nothing
@@ -183,17 +181,17 @@ Public Class AccessC
                 For Each ModKey As DictionaryEntry In fromTable(row)
                     '  If row = 0 Then
                     col += ModKey.Key.ToString & "],["
-                        values += ModKey.Key.ToString & ", @"
+                    values += ModKey.Key.ToString & ", @"
                     ' End If
 
                     cmd.Parameters.Add("@" & ModKey.Key.ToString, fromTable(row)(ModKey.Key.ToString))
                 Next
                 'If row = 0 Then
                 col = col.Substring(0, col.Length - 2) & ")"
-                    values = values.Substring(0, values.Length - 3) & ")"
+                values = values.Substring(0, values.Length - 3) & ")"
 
-                    sql += col & " values " & values
-                    cmd.CommandText = sql
+                sql += col & " values " & values
+                cmd.CommandText = sql
                 cmd.Transaction = Trans
                 'End If
 
@@ -204,7 +202,6 @@ Public Class AccessC
 
             Trans.Commit()
             ret = True
-
         Catch ex As Exception
             Trans.Rollback()
             'MsgBox(ex.Message)
@@ -218,12 +215,11 @@ Public Class AccessC
         Return ret
     End Function
 
-    Public Function getOracleConnectDaten(query As String) As Hashtable
+    Public Function getOracleConnectDaten(query As String) As Object
 
-        Dim ret = Nothing
+        Dim ret As Object = False
         Dim ht As New Hashtable()
         Dim htrow As New Hashtable()
-        Dim rowNr As Integer = 0
         If Not String.IsNullOrWhiteSpace(query) Then
             Try
                 Voglag.Open()
@@ -237,18 +233,16 @@ Public Class AccessC
                     ht.Add("Pass", reader.Item("OraclePass"))
                 End If
                 ret = ht
-                Voglag.Close()
             Catch ex As Exception
-                'MsgBox(ex.Message)
                 Console.WriteLine(ex.Message)
-                Voglag.Close()
-                ret = Nothing
+                ret = False
                 pt.put("AccessC", "getOracleConnectDaten", query, ex.Message, Form1.loopCounter)
+            Finally
+                Voglag.Close()
             End Try
         End If
         Return ret
 
     End Function
-
 
 End Class

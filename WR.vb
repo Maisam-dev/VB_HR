@@ -1,4 +1,5 @@
-﻿Imports FxResources.System.Data
+﻿Imports System.Data.OleDb
+Imports FxResources.System.Data
 
 Public Class WR
 

@@ -50,7 +50,8 @@ SELECT
         [Gewicht], 
         [Artnr], 
         [Kdnr],
-        [KOMM_Sdgnr]
+        [KOMM_Sdgnr],
+        [ORDERID]
 from TblAnWamas where AHStat = 0 
 "
 

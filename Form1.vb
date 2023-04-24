@@ -84,7 +84,6 @@ Public Class Form1
         lb2.Text = " USER: " & Me.oracleConnectDaten("User")
         lb1.Text = "SERVER: " & Me.oracleConnectDaten("Server")
     End Sub
-
 End Class
 
 

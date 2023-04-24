@@ -386,4 +386,27 @@ Public Class Oracdb
         Return Not String.IsNullOrWhiteSpace(ID)
     End Function
 
+
+    Public Function updateAllTable(table As String, spalteStatus As String, wert As Integer)
+        Dim Sql = "update " & table & " set " & spalteStatus & " = " & wert
+        Dim cmd As New OracleCommand(Sql, conn)
+        Dim ret As Boolean = False
+        Try
+            cmd.CommandType = CommandType.Text
+            conn.Open()
+            cmd.ExecuteNonQuery()
+            conn.Close()
+            ret = True
+        Catch ex As Exception
+            Console.Beep()
+            Console.WriteLine(ex.Message)
+            conn.Close()
+            pt.put("Oracdb", "updateTable", Sql, ex.Message, Form1.loopCounter)
+        End Try
+
+        Return ret
+
+    End Function
+
+
 End Class

@@ -63,6 +63,9 @@ Public Class Form1
         wr.insertTBlAuslagerungssperrenRückmeldungenFromLockout()
 
 
+        'LogisticLockout
+        wr.insertInTblLoBereichsSperrenFromLogisticLockout()
+
         ActKz = False
         Start.BackColor = Color.Red
         Start.Refresh()

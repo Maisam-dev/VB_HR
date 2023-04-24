@@ -16,6 +16,7 @@ Public Class WR
     Private EINLAGERUNGSMELDUNG
     Private LOCKOUT
     Private LOCKOUTLIST
+    Private logisticLockout
 
     Public Sub New(server, user, pass)
         ret = False
@@ -154,6 +155,14 @@ Public Class WR
         End If
         ret = True
         Return ret
+    End Function
+
+    Public Function insertInTblLoBereichsSperrenFromLogisticLockout()
+        Dim ret As Boolean = False
+        logisticLockout = orcdb.getTable(Definition.selectLogisticLockout)
+        If ACSdb.insertInTable(logisticLockout, "tblLgBereichsSperren") Then
+            orcdb.updateAllTable("LOGISTICLOCKOUT", "TELEGRAMSTATE", 1)
+        End If
     End Function
 
 End Class

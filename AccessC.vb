@@ -197,7 +197,6 @@ Public Class AccessC
 
                 cmd.ExecuteNonQuery()
                 cmd.Parameters.Clear()
-
             Next
 
             Trans.Commit()

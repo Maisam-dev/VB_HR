@@ -18,9 +18,9 @@ Public Class Oracdb
         Dim rund As Integer = Math.Round(table.Count / 1000 + 0.5)
         Dim start As Integer = 0
         Dim finsh As Integer = 999
-        If table.Count < 1 Then
-            Return ret
-        End If
+        'If table.Count < 1 Then
+        '    Return ret
+        'End If
         If TypeOf table Is Boolean AndAlso DirectCast(table, Boolean) = False Or TypeOf table Is Hashtable AndAlso DirectCast(table, Hashtable).Count < 1 Then
             Return False
         End If
